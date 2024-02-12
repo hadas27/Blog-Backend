@@ -1,11 +1,11 @@
 import { DataAccess } from '../DAL/DataAccess';
-import { PostDataAccess } from '../DAL/PostDataAccessInMemory';
 import Post from '../models/Post';
+import { PostDataAccessSQL } from '../DAL/PostDataAccesSQL';
 
 export class PostBL {
-    private postDataAccess: DataAccess<Post>;
+    private postDataAccess: PostDataAccessSQL;
 
-    constructor(postDataAccess: DataAccess<Post>) {
+    constructor(postDataAccess: PostDataAccessSQL) {
         this.postDataAccess = postDataAccess;
     }
 
@@ -25,8 +25,8 @@ export class PostBL {
         return Post;
     }
 
-    fetchPosts(offset?: number, limit?: number, text?: string) {
-        const Posts = this.postDataAccess.fetch(offset, limit, text);
+    fetchPosts(offset?: number, limit?: number, text?: string, authQuery?: string) {
+        const Posts = this.postDataAccess.fetch(offset, limit, text, authQuery);
 
         if (!Posts) {
             throw new Error("Posts not found");

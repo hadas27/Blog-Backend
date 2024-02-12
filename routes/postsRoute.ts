@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import { PostController } from '../Controllers/PostController';
 import { PostBL } from '../BL/PostBL';
-import { PostDataAccess } from '../DAL/PostDataAccessInMemory';
+import { PostDataAccessSQL } from '../DAL/PostDataAccesSQL';
 
 const router = express.Router();
-const postController = new PostController(new PostBL(new PostDataAccess()));
+const postController = new PostController(new PostBL(new PostDataAccessSQL()));
 
 router.post('/', async (req: Request, res: Response) => await postController.addPost(req, res));
 router.get('/', async (req: Request, res: Response) => await postController.getPosts(req, res));

@@ -13,7 +13,7 @@ export class PostController {
 
     async addPost(req: Request, res: Response): Promise<void> {
         const postData = req.body;
-        const post = new Post(postData.id, postData.title, postData.img_url, postData.description);
+        const post = new Post(postData.id, postData.title, postData.description, postData.postedBy);
         try {
             await this.postBL.addPost(post);
             res.status(201).send({ message: `Post created successfully` });
@@ -38,6 +38,7 @@ export class PostController {
             const from = parseInt(req.query.from as string);
             const to = parseInt(req.query.to as string);
             const text = req.query.text as string
+            const authQuery = req.query.auth as string
 
             // Validate 'from' and 'to' values; if invalid, set to undefined
             const validFrom = !isNaN(from) ? from : undefined;
@@ -46,33 +47,18 @@ export class PostController {
             const validText = text ? text : undefined
             const offset = validFrom ? validFrom - 1 : undefined;
             const limit = (validFrom && validTo) ? validTo - validFrom : undefined;
+            const validAuthQuery = authQuery ? authQuery : undefined
 
             // Fetch posts with or without pagination
-            const posts = await this.postBL.fetchPosts(offset, limit, validText);
-            const formattedPosts = posts.map(post => ({ id: post.id, title: post.title, img_url: post.img_url }));
+            const posts = await this.postBL.fetchPosts(offset, limit, validText, validAuthQuery);
+            // const formattedPosts = posts.map(post => ({ id: post.id, title: post.title }));
 
-            res.json(formattedPosts);
+            res.json(posts);
         }
         catch (error) {
             res.status(400).send((error as Error).message);
         }
     }
-
-
-    // getPosts(req: Request, res: Response) {
-    //     if (req.from && req.to && req.from < req.to) {
-    //         const offset = req.from - 1;
-    //         const limit = req.to - req.from;
-    //         const posts = dataSource.fetchPosts(offset, limit);
-    //     }
-    //     else {
-    //         const posts = dataSource.fetchPosts();
-    //     }
-    //     res.json(posts.map(post => ({ id: post.id, title: post.title, img_url: post.img_url })));
-
-    // }
-
-
 
 
     async updatePost(req: Request, res: Response): Promise<void> {
